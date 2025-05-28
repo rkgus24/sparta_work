@@ -86,15 +86,19 @@ let calculator = Calculator([
     ModuloOperation()
 ])
 
-do {
-    print("덧셈 결과: \(try calculator.calculate(op: "+", 10, 5))")
-    print("나눗셈 결과: \(try calculator.calculate(op: "/", 10, 2))")
-    print("뺄셈 결과: \(try calculator.calculate(op: "-", 10, 2))")
-    print("곱셈 결과: \(try calculator.calculate(op: "*", 3, 3))")
-    print("나머지 결과: \(try calculator.calculate(op: "%", 7, 4))")
-    
-    print("예외 테스트: \(try calculator.calculate(op: "/", 10, 0))")
-    
-} catch let error as CalculatorError {
-    print(error.description)
+let testCases: [(String, Double, Double)] = [
+    ("+", 10, 5),
+    ("-", 10, 2),
+    ("*", 10, 2),
+    ("/", 10, 0),
+    ("%", 10, 0)
+]
+
+for (op, a, b) in testCases {
+    do {
+        let result = try calculator.calculate(op: op, a, b)
+        print("\(a) \(op) \(b) = \(result)")
+    } catch let error as CalculatorError {
+        print("오류 (\(a) \(op) \(b)) -> \(error.description)")
+    }
 }
