@@ -6,54 +6,39 @@ enum CalculatorError: Error, CustomStringConvertible {
     
     var description: String {
         switch self {
-        case .divideByZero:
-            return "0으로는 나눌 수 없음"
-        case .invalidOperator:
-            return "지원하지 않는 연산자"
+        case .divideByZero: return "0으로는 나눌 수 없음"
+        case .invalidOperator: return "지원하지 않는 연산자"
         }
     }
 }
 
 class Calculator {
-    func calculate(operator op: String, firstNumber: Double, secondNumber: Double) throws -> Double {
+    func calculate(op: String, _ a: Double, _ b: Double) throws -> Double {
+        guard b != 0 || !["/", "%"].contains(op) else {
+            throw CalculatorError.divideByZero
+        }
+        
         switch op {
-        case "+":
-            return firstNumber + secondNumber
-        case "-":
-            return firstNumber - secondNumber
-        case "*":
-            return firstNumber * secondNumber
-        case "/":
-            if secondNumber == 0 {
-                throw CalculatorError.divideByZero
-            }
-            return firstNumber / secondNumber
-        case "%":
-            if secondNumber == 0 {
-                throw CalculatorError.divideByZero
-            }
-            return firstNumber.truncatingRemainder(dividingBy: secondNumber)
-        default:
-            throw CalculatorError.invalidOperator
+        case "+": return a + b
+        case "-": return a - b
+        case "*": return a * b
+        case "/": return a / b
+        case "%": return a.truncatingRemainder(dividingBy: b)
+        default:  throw CalculatorError.invalidOperator
         }
     }
 }
 
-let calculator = Calculator()
+let calc = Calculator()
 
 do {
-    let sum = try calculator.calculate(operator: "+", firstNumber: 10, secondNumber: 5)
-    print("덧셈 : \(sum)")
+    print("덧셈 : \(try calc.calculate(op: "+", 10, 5))")
+    print("나눗셈 : \(try calc.calculate(op: "/", 10, 2))")
+    print("나머지 : \(try calc.calculate(op: "%", 5, 3))")
     
-    let div = try calculator.calculate(operator: "/", firstNumber: 10, secondNumber: 0)
-    print("나눗셈 : \(div)")
-    
-    let remainder = try calculator.calculate(operator: "%", firstNumber: 5, secondNumber: 3)
-    print("나머지 : \(remainder)")
-    
-    let errorTest = try calculator.calculate(operator: "%", firstNumber: 5, secondNumber: 0)
-        print("예외 테스트 : \(errorTest)")
+    // 예외 테스트
+    print("예외 테스트 : \(try calc.calculate(op: "%", 5, 0))")
     
 } catch let error as CalculatorError {
-    print(error.description)
+    print("오류: \(error.description)")
 }
